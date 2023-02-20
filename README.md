@@ -18,8 +18,7 @@ import 'package:flutter_kastela_pkg/flutter_kastela_pkg.dart';
 Initialize Kastela Client SDK
 ```dart
 KastelaClient client = KastelaClient(
-	https://some-sites.xyz, //Your Kastela URL
-	https://some-other-sites.xyz, //Your Server URL
+	https://www.some-sites.xyz, //Your Kastela URL
 );
 ```
 
@@ -28,7 +27,7 @@ Retrieving `Secure Channel Token`
 
 ```dart  
 SecureChannelToken secureChannel = await client.secureChannelSend(
-	id,
+	credential,
 	data
 );
 ```
