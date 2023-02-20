@@ -1,10 +1,10 @@
-Kastela Client SDK for Flutter.
+Kastela Client SDK for Dart / Flutter.
 
 ## Getting started
 
 To start using the SDK, simply run :
 ```
-flutter pub add flutter_kastela_pkg
+flutter pub add kastela_sdk_dart
 ```
 Then
 ```dart
@@ -13,7 +13,7 @@ flutter pub get
 
 To import Kastela Client SDK
 ```dart
-import 'package:flutter_kastela_pkg/flutter_kastela_pkg.dart';
+import 'package:kastela_sdk_dart/kastela_sdk_dart.dart';
 ```
 Initialize Kastela Client SDK
 ```dart
