@@ -37,53 +37,49 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  KastelaClient kasClient =
-  KastelaClient(_kastelaUrl);
+  KastelaClient kasClient = KastelaClient(_kastelaUrl);
 
   void _request() async {
-    List<Map<String, String>> protectionList = [
+    List<Map<String, dynamic>> protectionList = [
       {
         "id": "5f77f9c2-2800-4661-b479-a0791aa0eacc",
-        "data": "example@mail.id",
+        "data": ["example@mail.id"],
       },
       {
         "id": "6980a205-db7a-4b8e-bfce-551709034cc3",
-        "data": "INDONESIA",
+        "data": ["INDONESIA"],
       },
       {
         "id": "963d8305-f68c-4f9a-b6b4-d568fc3d8f78",
-        "data": "1234123412341234",
+        "data": ["1234123412341234"],
       },
       {
         "id": "0c392d3c-4ec0-4e11-a5bc-d6e094c21ea0",
-        "data": "123-456-7890",
+        "data": ["123-456-7890"],
       },
     ];
 
-    List<Future<SecureChannelToken>> tokenList =
-    protectionList.map((protection) async {
-      DioResponse.Response credRes = await Dio().post(
-          "$_backendUrl/api/secure-channel/init",
-          data: {
-            "protection_id": protection["id"],
-            "ttl": 1,
-          });
-      dynamic credential = credRes.data["credential"];
-      return await kasClient.secureChannelSend(credential, protection["data"]);
-    }).toList();
+    DioResponse.Response credRes =
+        await Dio().post("$_backendUrl/api/secure/protection/init", data: {
+      "operation": "WRITE",
+      "protection_ids": protectionList.map((value) => value["id"]).toList(),
+      "ttl": 1,
+    });
 
-    List<SecureChannelToken> finalTokenList = await Future.wait(tokenList);
+    String credential = credRes.data!["credential"];
+    List<List<String>> protectionDataList = protectionList
+        .map((protection) => protection["data"] as List<String>)
+        .toList();
+
+    SecureChannelToken finalTokenList =
+        await kasClient.secureChannelSend(credential, protectionDataList);
 
     GraphQLClient gqlClient = GraphQLClient(
-        link: HttpLink("$_backendUrl/graphql"),
-        cache: GraphQLCache());
+        link: HttpLink("$_backendUrl/graphql"), cache: GraphQLCache());
 
     String mutationGql = r"""
-      mutation storeUserSecure($data: UserStoreInput!) {
-      store_user_secure(data: $data) {
-        id
-      }
+      mutation storeUserSecure($data: UserStoreInput!, $credential: String!) {
+        store_user_secure(data: $data, credential: $credential)
      }""";
 
     MutationOptions options = MutationOptions(
@@ -92,26 +88,15 @@ class _MyHomePageState extends State<MyHomePage> {
           "data": {
             "id": 999,
             "name": "John Doe",
-            "email": finalTokenList[0].token,
-            "country": finalTokenList[1].token,
-            "credit_card": finalTokenList[2].token,
-            "phone": finalTokenList[3].token,
-          }
+            "email": finalTokenList.tokens[0][0],
+            "country": finalTokenList.tokens[1][0],
+            "credit_card": finalTokenList.tokens[2][0],
+            "phone": finalTokenList.tokens[3][0],
+          },
+          "credential": credential
         });
 
     await gqlClient.mutate(options);
-
-    List<Future<dynamic>> finalCommits =
-    finalTokenList.map((secureChannel) async {
-      return Dio().post(
-        "$_backendUrl/api/secure-channel/commit",
-        data: {
-          "id": secureChannel.id,
-        },
-      );
-    }).toList();
-
-    await Future.wait(finalCommits);
   }
 
   @override
