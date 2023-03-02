@@ -1,6 +1,5 @@
 class SecureChannelToken {
-  late String id;
-  late String token;
+  late List<dynamic> tokens;
 
-  SecureChannelToken(this.id, this.token);
+  SecureChannelToken(this.tokens);
 }
