@@ -7,7 +7,7 @@ import 'package:pinenacl/x25519.dart';
 import 'package:pinenacl/tweetnacl.dart';
 
 String _expectedVersion = "v0.2";
-String _secureChannelPath = "api/secure-channel";
+String _secureChannelPath = "api/secure/protection";
 
 class KastelaClient {
   late String _kastelaUrl;
@@ -36,7 +36,7 @@ class KastelaClient {
         List<String> expectedSplitted =
             _expectedVersion.substring(1).split(".");
         List<String> actualSplitted =
-            actualKastelaVersion!.substring(1).split(".");
+            actualKastelaVersion.substring(1).split(".");
         int actualMajor = int.parse(actualSplitted[0]);
         int actualMinor = int.parse(actualSplitted[1]);
         int expectedMajor = int.parse(expectedSplitted[0]);
@@ -57,39 +57,52 @@ class KastelaClient {
     }
   }
 
+  String _generateCipherText(String dataToCipher, PrivateKey clientPrivateKey,
+      PublicKey serverPublicKey) {
+    Uint8List plainText = Uint8List.fromList(dataToCipher.toString().codeUnits);
+    Uint8List nonce = PineNaClUtils.randombytes(TweetNaCl.nonceLength);
+    EncryptedMessage cipherText =
+        Box(myPrivateKey: clientPrivateKey, theirPublicKey: serverPublicKey)
+            .encrypt(plainText, nonce: nonce);
+    return base64Encode(cipherText);
+  }
+
   Future<SecureChannelToken> secureChannelSend(
-      String credential, dynamic data) async {
+      String credential, List<List<dynamic>> data) async {
     try {
       PrivateKey clientPrivateKey = PrivateKey.generate();
       PublicKey clientPublicKey = clientPrivateKey.publicKey;
 
       Map<String, dynamic> beginRes = await _request(
         "POST",
-        "$_kastelaUrl/${_secureChannelPath}/begin",
+        "$_kastelaUrl/$_secureChannelPath/begin",
         {
           "credential": credential,
           "client_public_key": base64Encode(clientPublicKey)
         },
       );
 
-      Uint8List plainText = Uint8List.fromList(data.toString().codeUnits);
-      Uint8List nonce = PineNaClUtils.randombytes(TweetNaCl.nonceLength);
       PublicKey serverPubKey =
           PublicKey(base64Decode(beginRes["server_public_key"]));
-      final cipherText =
-          Box(myPrivateKey: clientPrivateKey, theirPublicKey: serverPubKey)
-              .encrypt(plainText, nonce: nonce);
+
+      List<List<String>> fullTexts = data
+          .map((protectionsDatas) => protectionsDatas
+              .map((val) =>
+                  _generateCipherText(val, clientPrivateKey, serverPubKey))
+              .toList())
+          .toList();
 
       dynamic sendRes = await _request(
         "POST",
         "$_kastelaUrl/$_secureChannelPath/insert",
-        {
-          "credential": credential,
-          "data": base64Encode(cipherText)
-        },
+        {"credential": credential, "data": fullTexts},
       );
 
-      return SecureChannelToken(beginRes["id"], sendRes!["token"]);
+      List<dynamic> tokens = sendRes!["tokens"]
+          .map((token) => token.map((value) => value as String).toList())
+          .toList();
+
+      return SecureChannelToken(tokens);
     } on DioError catch (err) {
       if (err.response?.data != null) {
         var data = err.response!.data;
