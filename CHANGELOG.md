@@ -1,3 +1,6 @@
+## 0.3.3
+- Fix dependency
+
 ## 0.3.2
 - Change Dart SDK compatibility
 
