@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:dio/src/response.dart' as DioResponse;
-import 'package:kastela_sdk_dart/SecureChannelToken.dart';
+import 'package:kastela_sdk_dart/secure_channel_token.dart';
 import 'package:kastela_sdk_dart/kastela_sdk_dart.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
