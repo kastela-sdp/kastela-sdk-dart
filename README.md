@@ -28,6 +28,6 @@ Retrieving `Secure Channel Token`
 ```dart  
 SecureChannelToken secureChannel = await client.secureChannelSend(
 	credential,
-	data
+	[[data]]
 );
 ```

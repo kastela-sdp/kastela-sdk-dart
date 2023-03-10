@@ -6,7 +6,7 @@ import 'package:kastela_sdk_dart/SecureChannelToken.dart';
 import 'package:pinenacl/x25519.dart';
 import 'package:pinenacl/tweetnacl.dart';
 
-String _expectedVersion = "v0.2";
+String _expectedVersion = "v0.3";
 String _secureChannelPath = "api/secure/protection";
 
 class KastelaClient {
