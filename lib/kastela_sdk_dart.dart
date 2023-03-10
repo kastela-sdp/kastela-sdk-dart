@@ -2,7 +2,7 @@ library flutter_kastela_pkg;
 
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:kastela_sdk_dart/SecureChannelToken.dart';
+import 'package:kastela_sdk_dart/secure_channel_token.dart';
 import 'package:pinenacl/x25519.dart';
 import 'package:pinenacl/tweetnacl.dart';
 
