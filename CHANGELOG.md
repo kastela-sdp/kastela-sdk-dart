@@ -1,3 +1,6 @@
+## 0.3.5
+- Follow dart standard file naming
+
 ## 0.3.4
 - Add repository reference
 
