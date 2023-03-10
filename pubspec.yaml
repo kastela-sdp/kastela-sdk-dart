@@ -1,7 +1,8 @@
 name: kastela_sdk_dart
 description: Kastela Client SDK for Dart / Flutter
-version: 0.3.3
-homepage:
+version: 0.3.4
+repository: https://github.com/kastela-sdp/kastela-sdk-dart
+issue_tracker: https://github.com/kastela-sdp/kastela-sdk-dart/issues
 
 environment:
   sdk: '>=2.18.2 <3.0.0'
