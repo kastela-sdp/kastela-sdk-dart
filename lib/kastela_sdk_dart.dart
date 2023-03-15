@@ -6,7 +6,6 @@ import 'package:kastela_sdk_dart/secure_channel_token.dart';
 import 'package:pinenacl/x25519.dart';
 import 'package:pinenacl/tweetnacl.dart';
 
-String _expectedVersion = "v0.3";
 String _secureChannelPath = "api/secure/protection";
 
 class KastelaClient {
@@ -30,25 +29,8 @@ class KastelaClient {
         url,
         data: body,
       );
-      Headers responseHeaders = response.headers;
-      String? actualKastelaVersion = responseHeaders.value("x-kastela-version");
-      if (actualKastelaVersion != null) {
-        List<String> expectedSplitted =
-            _expectedVersion.substring(1).split(".");
-        List<String> actualSplitted =
-            actualKastelaVersion.substring(1).split(".");
-        int actualMajor = int.parse(actualSplitted[0]);
-        int actualMinor = int.parse(actualSplitted[1]);
-        int expectedMajor = int.parse(expectedSplitted[0]);
-        int expectedMinor = int.parse(expectedSplitted[1]);
 
-        if ((expectedMajor == actualMajor && expectedMinor == actualMinor) ||
-            actualKastelaVersion == "v0.0.0") {
-          return response.data;
-        }
-      }
-
-      throw ("Kastela server version mismatch. Expected: $_expectedVersion.x, actual: $actualKastelaVersion");
+      return response.data;
     } on DioError catch (error) {
       if (error.response!.data != null) {
         throw (error.response!.data.toString());
