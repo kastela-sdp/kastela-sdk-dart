@@ -18,7 +18,7 @@ jobs:
         run: flutter pub get
       - name: Format code
         run: dart format --fix .
-      - name: Format code
+      - name: Create doc
         run: dart doc .
       - name: Check Publish Warnings
         run: dart pub publish --dry-run
