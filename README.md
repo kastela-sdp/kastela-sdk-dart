@@ -18,16 +18,27 @@ import 'package:kastela_sdk_dart/kastela_sdk_dart.dart';
 Initialize Kastela Client SDK
 ```dart
 KastelaClient client = KastelaClient(
-	https://www.some-sites.xyz, //Your Kastela URL
+	https://some-sites.xyz, //Your Kastela URL
 );
 ```
 
 ## Usage
-Retrieving `Secure Channel Token`
+Basic implementation of `Secure Protection Send` and `Secure Vault Receive`
 
 ```dart  
-SecureChannelToken secureChannel = await client.secureChannelSend(
+SecureProtectionToken protectionToken = await client.secureChannelSend(
 	credential,
 	[[data]]
 );
+
+print("Token: ${protectionToken.tokens[0][0]}");
+
+SecureVaultValues vaultValues = await client.secureVaultReceive(
+    credential, 
+    [[vaultTokens]]
+);
+
+print("Vault Values: ${vaultValues.values[0][0]}");
 ```
+
+Please refer to the [example](https://github.com/kastela-sdp/kastela-sdk-dart/blob/master/example/main.dart) for more information about how to use the client SDK.
