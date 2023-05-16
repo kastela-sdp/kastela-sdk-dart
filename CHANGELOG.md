@@ -1,3 +1,7 @@
+## 0.6.0
+
+- Protection/vault send and receive method
+
 ## 0.5.0
 
 - Update sdk version
