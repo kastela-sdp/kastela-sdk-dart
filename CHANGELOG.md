@@ -1,3 +1,7 @@
+## 0.6.1
+
+- Update readme
+
 ## 0.6.0
 
 - Protection/vault send and receive method
